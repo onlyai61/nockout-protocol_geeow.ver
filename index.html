@@ -293,6 +293,16 @@
         overflow: hidden;
       }
 
+      .model-placeholder {
+        position: relative;
+        z-index: 1;
+        display: grid;
+        place-items: center;
+        color: rgba(245, 248, 255, 0.7);
+        font-size: 14px;
+        font-weight: 800;
+      }
+
       .city-lines {
         position: absolute;
         inset: auto 0 20px;
@@ -908,6 +918,10 @@
                   <p id="modeDescription">균형형 프레임. 불완전하지만 모든 강화가 가능하다.</p>
                 </div>
                 <span class="chip" id="tierLabel">강화 1단계</span>
+              </div>
+
+              <div class="robot-stage" aria-label="로봇 모델링 표시 영역">
+                <div class="model-placeholder">로봇모델링표시 예정</div>
               </div>
 
               <div class="stats-grid">
