@@ -431,6 +431,67 @@
         box-shadow: 0 0 20px rgba(255, 89, 109, 0.3);
       }
 
+      .enemy-bot {
+        transform: scaleX(1.08);
+      }
+
+      .enemy-bot div {
+        border-color: rgba(255, 89, 109, 0.34);
+        background: linear-gradient(135deg, #8a94a8, #1b202b 42%, #090c12 68%, #ff596d);
+        box-shadow: inset 0 0 18px rgba(255, 89, 109, 0.12);
+      }
+
+      .enemy-bot .head {
+        left: 31%;
+        width: 38%;
+        clip-path: polygon(14% 0, 86% 0, 100% 70%, 82% 100%, 18% 100%, 0 70%);
+      }
+
+      .enemy-bot .eye {
+        left: 34%;
+        width: 32%;
+        height: 4%;
+        border: 0;
+        background: var(--red);
+        box-shadow: 0 0 20px rgba(255, 89, 109, 0.82);
+      }
+
+      .enemy-bot .torso {
+        left: 22%;
+        width: 56%;
+        clip-path: polygon(8% 0, 92% 0, 100% 82%, 72% 100%, 28% 100%, 0 82%);
+      }
+
+      .enemy-bot .core {
+        left: 42%;
+        width: 16%;
+        background: radial-gradient(circle, #fff3b0 0 18%, var(--amber) 19% 52%, rgba(255, 89, 109, 0.95) 53%);
+        box-shadow: 0 0 28px rgba(247, 184, 75, 0.8);
+      }
+
+      .enemy-bot .arm-left,
+      .enemy-bot .arm-right {
+        top: 23%;
+        height: 42%;
+        transform-origin: 50% 14%;
+      }
+
+      .enemy-bot .arm-left {
+        left: 1%;
+        transform: rotate(18deg);
+      }
+
+      .enemy-bot .arm-right {
+        right: 1%;
+        transform: rotate(-18deg);
+      }
+
+      .enemy-bot .leg-left,
+      .enemy-bot .leg-right {
+        top: 56%;
+        height: 39%;
+      }
+
       .stats-grid,
       .mode-grid,
       .arena-grid {
@@ -584,7 +645,20 @@
       }
 
       .enemy.is-attacking {
-        animation: attackWindup 0.9s ease-in-out infinite;
+        animation: enemyBodyPunch 0.9s ease-in-out both;
+      }
+
+      .enemy.is-attacking .enemy-bot .arm-right {
+        animation: enemyPunchArm 0.9s cubic-bezier(0.2, 0.82, 0.2, 1) both;
+      }
+
+      .enemy.is-attacking .enemy-bot .torso {
+        animation: enemyPunchTorso 0.9s ease-in-out both;
+      }
+
+      .enemy.is-attacking .enemy-bot .eye,
+      .enemy.is-attacking .enemy-bot .core {
+        animation: enemyAttackGlow 0.9s ease-in-out both;
       }
 
       .enemy.is-hit {
@@ -766,17 +840,6 @@
         }
       }
 
-      @keyframes attackWindup {
-        0%,
-        100% {
-          transform: translateX(-50%) scale(1);
-        }
-
-        50% {
-          transform: translateX(-50%) scale(1.045);
-        }
-      }
-
       @keyframes hitFlash {
         0%,
         100% {
@@ -785,6 +848,72 @@
 
         50% {
           filter: brightness(1.8) saturate(1.6);
+        }
+      }
+
+      @keyframes enemyBodyPunch {
+        0% {
+          transform: translateX(-50%) translateY(0) scale(1);
+        }
+
+        34% {
+          transform: translateX(-50%) translateY(3px) scale(0.98);
+        }
+
+        68% {
+          transform: translateX(-50%) translateY(-6px) scale(1.08);
+        }
+
+        100% {
+          transform: translateX(-50%) translateY(0) scale(1);
+        }
+      }
+
+      @keyframes enemyPunchArm {
+        0% {
+          transform: rotate(-18deg) translate(0, 0);
+        }
+
+        32% {
+          transform: rotate(-62deg) translate(-20%, 8%);
+        }
+
+        68% {
+          transform: rotate(-96deg) translate(-54%, -5%) scaleY(1.16);
+        }
+
+        100% {
+          transform: rotate(-18deg) translate(0, 0);
+        }
+      }
+
+      @keyframes enemyPunchTorso {
+        0%,
+        100% {
+          transform: translateX(0) skewX(0);
+        }
+
+        32% {
+          transform: translateX(5%) skewX(-4deg);
+        }
+
+        68% {
+          transform: translateX(-7%) skewX(6deg);
+        }
+      }
+
+      @keyframes enemyAttackGlow {
+        0%,
+        100% {
+          filter: none;
+        }
+
+        38% {
+          filter: brightness(1.25);
+        }
+
+        68% {
+          filter: brightness(1.9) saturate(1.6);
         }
       }
 
@@ -991,7 +1120,7 @@
             <div class="combat-message" id="combatMessage">상대 패턴을 보고 공격 타이밍을 잡으세요.</div>
             <div class="arena-depth"></div>
             <div class="enemy" id="enemy">
-              <div class="robot tier-2" id="enemyRobot">
+              <div class="robot enemy-bot tier-2" id="enemyRobot">
                 <div class="head"></div>
                 <div class="eye"></div>
                 <div class="torso"></div>
@@ -1198,7 +1327,7 @@
         state.battleOver = false;
         state.enemyAttacking = false;
         state.hacked = Boolean(enemy.hacked);
-        els.enemyRobot.className = `robot tier-${enemy.hacked ? 3 : 2}${enemy.hacked ? " has-weapon" : ""}`;
+        els.enemyRobot.className = `robot enemy-bot tier-${enemy.hacked ? 3 : 2}${enemy.hacked ? " has-weapon" : ""}`;
         els.enemyName.textContent = enemy.name;
         els.combatMode.textContent = modes[state.mode].label;
         els.combatHint.textContent = enemy.hacked ? "화기 강공격은 약점 패링 필수" : "약점이 뜨면 터치해서 패링";
