@@ -175,7 +175,7 @@
       }
 
       .hub-shell {
-        grid-template-rows: auto 1fr auto;
+        grid-template-rows: auto 1fr;
       }
 
       .topbar {
@@ -226,17 +226,17 @@
 
       .hub-grid {
         display: grid;
-        grid-template-columns: 1.05fr 0.95fr;
+        grid-template-columns: 1fr;
         min-height: 0;
       }
 
       .garage {
         position: relative;
         display: grid;
-        grid-template-rows: auto 1fr auto;
+        grid-template-rows: auto 1fr;
+        gap: 18px;
         min-height: 0;
         padding: 18px;
-        border-right: 1px solid var(--line);
         background:
           linear-gradient(180deg, rgba(83, 228, 255, 0.08), transparent 34%),
           rgba(0, 0, 0, 0.16);
@@ -256,6 +256,32 @@
       .section-title p {
         color: var(--muted);
         font-size: 12px;
+      }
+
+      .home-brief {
+        display: grid;
+        align-content: center;
+        gap: 18px;
+        min-height: 0;
+      }
+
+      .story-card {
+        padding: 18px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.04);
+      }
+
+      .story-card strong {
+        display: block;
+        margin-bottom: 8px;
+        color: var(--cyan);
+        font-size: 13px;
+      }
+
+      .story-card p {
+        color: var(--muted);
+        line-height: 1.55;
       }
 
       .robot-stage {
@@ -788,12 +814,7 @@
         }
 
         .garage {
-          border-right: 0;
-          border-bottom: 1px solid var(--line);
-        }
-
-        .robot-stage {
-          min-height: 230px;
+          border-bottom: 0;
         }
 
         .stats-grid {
@@ -861,7 +882,7 @@
             <span class="google-mark">G</span>
             Google로 로그인
           </button>
-          <button type="button" id="guestStart" style="margin-top:10px;">게스트로 시작</button>
+          <button type="button" id="guestStart" style="margin-top:10px;">게스트 로그인</button>
         </div>
       </section>
 
@@ -875,7 +896,6 @@
             <div class="resource-row">
               <span class="chip">스크랩 <b id="scrapCount">0</b></span>
               <span class="chip">코어 <b id="coreCount">0</b></span>
-              <span class="chip">리그 <b id="leagueRank">예선</b></span>
             </div>
           </header>
 
@@ -889,18 +909,15 @@
                 <span class="chip" id="tierLabel">강화 1단계</span>
               </div>
 
-              <div class="robot-stage">
-                <div class="city-lines"></div>
-                <div class="robot" id="hubRobot" aria-label="주인공 로봇">
-                  <div class="head"></div>
-                  <div class="eye"></div>
-                  <div class="torso"></div>
-                  <div class="core"></div>
-                  <div class="arm-left"></div>
-                  <div class="arm-right"></div>
-                  <div class="leg-left"></div>
-                  <div class="leg-right"></div>
-                </div>
+              <div class="home-brief">
+                <section class="story-card">
+                  <strong>현재 기록</strong>
+                  <p>쓰레기장에서 조립한 PATCH-01은 아직 불완전합니다. 완성형 기성품과 달리, 고철 프레임은 전투에서 얻은 파츠로 계속 재구성될 수 있습니다.</p>
+                </section>
+                <section class="story-card">
+                  <strong>다음 목표</strong>
+                  <p>차고 화면은 우선 상태 확인용으로 정리했습니다. 전투, 강화, 훈련, 친구 기능은 이후 별도 화면에서 다시 붙일 수 있게 분리합니다.</p>
+                </section>
               </div>
 
               <div class="stats-grid">
@@ -910,42 +927,6 @@
                 <div class="stat"><span>강화</span><strong id="statCharge">0%</strong></div>
               </div>
             </section>
-
-            <aside class="side-panel">
-              <section class="panel-block">
-                <h3>모드 변경</h3>
-                <div class="mode-grid">
-                  <button class="mode-button active" type="button" data-mode="balanced">기본</button>
-                  <button class="mode-button" type="button" data-mode="heavy">중량</button>
-                  <button class="mode-button" type="button" data-mode="agile">기동</button>
-                </div>
-              </section>
-
-              <section class="panel-block">
-                <h3>강화</h3>
-                <p class="log" id="upgradeText">전투에서 떨어진 파츠를 모아 프레임을 강화하세요.</p>
-                <button class="upgrade-button" type="button" id="upgradeButton">스크랩 40으로 강화</button>
-              </section>
-
-              <section class="panel-block">
-                <h3>투기장</h3>
-                <div class="arena-grid">
-                  <button class="arena-button" type="button" data-arena="main">
-                    <strong>메인 투기장</strong>
-                    <span>스토리를 진행하고 기업제 로봇과 결투합니다.</span>
-                  </button>
-                  <button class="arena-button" type="button" data-arena="alley">
-                    <strong>뒷골목 투기장</strong>
-                    <span>연습과 파츠 파밍. 난이도는 낮고 보상도 작습니다.</span>
-                  </button>
-                </div>
-              </section>
-            </aside>
-          </div>
-
-          <div class="footer-actions">
-            <button type="button" id="pvpButton">PVP 준비중</button>
-            <button type="button" id="resetButton">프로토타입 초기화</button>
           </div>
         </div>
       </section>
@@ -1053,10 +1034,8 @@
         title: document.querySelector(".title-screen"),
         googleLogin: document.querySelector("#googleLogin"),
         guestStart: document.querySelector("#guestStart"),
-        hubRobot: document.querySelector("#hubRobot"),
         scrap: document.querySelector("#scrapCount"),
         cores: document.querySelector("#coreCount"),
-        rank: document.querySelector("#leagueRank"),
         storyBeat: document.querySelector("#storyBeat"),
         modeDescription: document.querySelector("#modeDescription"),
         tierLabel: document.querySelector("#tierLabel"),
@@ -1064,12 +1043,8 @@
         statAtk: document.querySelector("#statAtk"),
         statDodge: document.querySelector("#statDodge"),
         statCharge: document.querySelector("#statCharge"),
-        upgradeText: document.querySelector("#upgradeText"),
-        upgradeButton: document.querySelector("#upgradeButton"),
         modeButtons: document.querySelectorAll(".mode-button"),
         arenaButtons: document.querySelectorAll(".arena-button"),
-        pvpButton: document.querySelector("#pvpButton"),
-        resetButton: document.querySelector("#resetButton"),
         playerHpText: document.querySelector("#playerHpText"),
         enemyHpText: document.querySelector("#enemyHpText"),
         playerHpBar: document.querySelector("#playerHpBar"),
@@ -1117,7 +1092,6 @@
         const s = stats();
         els.scrap.textContent = state.scrap;
         els.cores.textContent = state.cores;
-        els.rank.textContent = state.story >= 4 ? "챔피언" : ["예선", "하위 리그", "중위 리그", "준결승", "결승"][state.story] || "예선";
         els.storyBeat.textContent = storyText();
         els.modeDescription.textContent = modes[state.mode].desc;
         els.tierLabel.textContent = `강화 ${state.tier}단계`;
@@ -1125,10 +1099,6 @@
         els.statAtk.textContent = s.atk;
         els.statDodge.textContent = s.dodge;
         els.statCharge.textContent = `${state.charge}%`;
-        els.hubRobot.className = `robot tier-${state.tier} mode-${state.mode}${state.weapon ? " has-weapon" : ""}`;
-        els.upgradeButton.textContent = state.tier < 3 ? `스크랩 ${upgradeCost()}으로 강화` : "최종 프레임 완성";
-        els.upgradeButton.disabled = state.tier >= 3 || state.scrap < upgradeCost();
-        els.upgradeText.textContent = upgradeCopy();
         els.modeButtons.forEach((button) => button.classList.toggle("active", button.dataset.mode === state.mode));
       }
 
@@ -1396,7 +1366,7 @@
       els.arenaButtons.forEach((button) => {
         button.addEventListener("click", () => startBattle(button.dataset.arena));
       });
-      els.upgradeButton.addEventListener("click", upgrade);
+      els.upgradeButton?.addEventListener("click", upgrade);
       els.attackButton.addEventListener("click", () => playerAttack(1));
       els.skillButton.addEventListener("click", useSkill);
       els.dodgeButton.addEventListener("click", dodge);
@@ -1404,8 +1374,8 @@
         renderHub();
         showScreen("hub");
       });
-      els.pvpButton.addEventListener("click", () => window.alert("PVP는 온라인 기능 단계에서 구현합니다."));
-      els.resetButton.addEventListener("click", resetPrototype);
+      els.pvpButton?.addEventListener("click", () => window.alert("PVP는 온라인 기능 단계에서 구현합니다."));
+      els.resetButton?.addEventListener("click", resetPrototype);
 
       setupJoystick();
       renderHub();
