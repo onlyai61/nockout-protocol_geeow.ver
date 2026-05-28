@@ -2,106 +2,165 @@
 <html lang="ko">
   <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <title>NOCKOUT Protocol</title>
     <style>
       * {
         box-sizing: border-box;
       }
 
+      :root {
+        color-scheme: dark;
+        --bg: #05070b;
+        --panel: rgba(8, 13, 22, 0.86);
+        --panel-strong: rgba(11, 18, 31, 0.96);
+        --line: rgba(234, 242, 255, 0.18);
+        --text: #f5f8ff;
+        --muted: #aab8ca;
+        --cyan: #53e4ff;
+        --amber: #f7b84b;
+        --red: #ff596d;
+        --green: #73f0a2;
+        --steel: #76879c;
+      }
+
       body {
-        display: grid;
-        place-items: center;
         min-height: 100dvh;
         margin: 0;
-        padding: 24px;
+        overflow: hidden;
         background:
-          radial-gradient(circle at 50% 20%, rgba(83, 228, 255, 0.18), transparent 34%),
-          #05070b;
-        color: #f5f8ff;
+          linear-gradient(180deg, rgba(20, 33, 48, 0.35), rgba(2, 4, 8, 0.94)),
+          repeating-linear-gradient(90deg, rgba(83, 228, 255, 0.04) 0 1px, transparent 1px 88px),
+          var(--bg);
+        color: var(--text);
         font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       }
 
       button {
+        min-height: 42px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: rgba(12, 22, 36, 0.9);
+        color: var(--text);
         font: inherit;
+        font-weight: 800;
+        cursor: pointer;
+      }
+
+      button:active {
+        transform: translateY(1px);
+      }
+
+      button:disabled {
+        cursor: not-allowed;
+        opacity: 0.5;
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin: 0;
+      }
+
+      #app {
+        position: relative;
+        min-height: 100dvh;
       }
 
       .screen {
-        width: min(560px, 100%);
-        padding: 28px;
-        border: 1px solid rgba(234, 242, 255, 0.18);
-        border-radius: 8px;
-        background: rgba(8, 13, 22, 0.78);
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.42);
+        position: absolute;
+        inset: 0;
+        display: none;
+      }
+
+      .screen.active {
+        display: block;
       }
 
       .title-screen {
-        display: grid;
-        min-height: 360px;
         place-items: center;
+        padding: 24px;
         text-align: center;
         cursor: pointer;
       }
 
-      .game-ui {
-        display: none;
+      .title-screen.active {
+        display: grid;
       }
 
-      .is-started .title-screen {
-        display: none;
+      .title-box {
+        width: min(620px, 100%);
+        padding: 34px 28px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--panel);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.42);
       }
 
-      .is-started .game-ui {
-        display: block;
-      }
-
-      h1 {
-        margin: 0 0 10px;
-        font-size: 24px;
+      .eyebrow {
+        color: var(--amber);
+        font-size: 12px;
+        font-weight: 900;
         letter-spacing: 0;
       }
 
-      p {
-        margin: 0 0 14px;
-        color: #aab8ca;
+      .title {
+        margin-top: 8px;
+        font-size: clamp(34px, 9vw, 68px);
+        line-height: 0.94;
+        letter-spacing: 0;
+      }
+
+      .subtitle {
+        margin-top: 16px;
+        color: var(--muted);
         line-height: 1.55;
       }
 
       .touch-text {
-        margin-top: 28px;
-        color: #53e4ff;
+        margin-top: 30px;
+        color: var(--cyan);
         font-size: 13px;
-        font-weight: 800;
+        font-weight: 900;
         letter-spacing: 0;
-        animation: pulse 1.4s ease-in-out infinite;
+        animation: blink 1.35s ease-in-out infinite;
       }
 
-      .actions {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-        margin-top: 18px;
+      .login-screen,
+      .hub-screen,
+      .combat-screen {
+        padding: 16px;
       }
 
-      a,
+      .shell {
+        display: grid;
+        width: min(1120px, 100%);
+        height: calc(100dvh - 32px);
+        margin: 0 auto;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        overflow: hidden;
+        background: var(--panel);
+        box-shadow: 0 20px 70px rgba(0, 0, 0, 0.48);
+      }
+
+      .login-shell {
+        align-content: center;
+        justify-items: center;
+        padding: 24px;
+        text-align: center;
+      }
+
       .google-login {
         display: inline-flex;
-        min-height: 42px;
+        min-width: 210px;
         align-items: center;
         justify-content: center;
-        padding: 0 14px;
-        border: 0;
-        border-radius: 8px;
-        background: #53e4ff;
-        color: #041018;
-        font-weight: 800;
-        text-decoration: none;
-      }
-
-      .google-login {
-        gap: 8px;
+        gap: 9px;
+        margin-top: 22px;
         background: #f5f8ff;
-        cursor: not-allowed;
+        color: #041018;
       }
 
       .google-mark {
@@ -115,67 +174,1241 @@
         font-weight: 900;
       }
 
-      .notice {
-        margin-top: 12px;
-        font-size: 13px;
+      .hub-shell {
+        grid-template-rows: auto 1fr auto;
       }
 
-      @keyframes pulse {
+      .topbar {
+        display: flex;
+        min-height: 58px;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--line);
+        background: rgba(3, 7, 12, 0.62);
+      }
+
+      .brand {
+        display: grid;
+        gap: 2px;
+      }
+
+      .brand strong {
+        font-size: 15px;
+      }
+
+      .brand span {
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .resource-row {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        gap: 8px;
+      }
+
+      .chip {
+        display: inline-flex;
+        min-height: 30px;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 9px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.04);
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 800;
+      }
+
+      .hub-grid {
+        display: grid;
+        grid-template-columns: 1.05fr 0.95fr;
+        min-height: 0;
+      }
+
+      .garage {
+        position: relative;
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+        min-height: 0;
+        padding: 18px;
+        border-right: 1px solid var(--line);
+        background:
+          linear-gradient(180deg, rgba(83, 228, 255, 0.08), transparent 34%),
+          rgba(0, 0, 0, 0.16);
+      }
+
+      .section-title {
+        display: flex;
+        align-items: end;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .section-title h2 {
+        font-size: 20px;
+      }
+
+      .section-title p {
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .robot-stage {
+        position: relative;
+        display: grid;
+        min-height: 280px;
+        place-items: center;
+        overflow: hidden;
+      }
+
+      .city-lines {
+        position: absolute;
+        inset: auto 0 20px;
+        height: 120px;
+        opacity: 0.4;
+        background:
+          linear-gradient(90deg, transparent 0 8%, rgba(83, 228, 255, 0.5) 8% 9%, transparent 9% 18%, rgba(247, 184, 75, 0.5) 18% 19%, transparent 19% 100%),
+          repeating-linear-gradient(90deg, transparent 0 42px, rgba(255, 255, 255, 0.12) 42px 44px),
+          linear-gradient(0deg, rgba(83, 228, 255, 0.16), transparent);
+        clip-path: polygon(0 100%, 0 52%, 9% 52%, 9% 22%, 19% 22%, 19% 60%, 32% 60%, 32% 34%, 43% 34%, 43% 72%, 58% 72%, 58% 18%, 69% 18%, 69% 64%, 82% 64%, 82% 38%, 100% 38%, 100% 100%);
+      }
+
+      .robot {
+        position: relative;
+        width: min(230px, 48vw);
+        height: min(330px, 56vh);
+        filter: drop-shadow(0 26px 26px rgba(0, 0, 0, 0.52));
+      }
+
+      .robot div {
+        position: absolute;
+        border: 2px solid rgba(245, 248, 255, 0.14);
+        background: linear-gradient(135deg, #4d596a, #151c27 52%, #6c7b8d);
+      }
+
+      .robot .head {
+        top: 2%;
+        left: 34%;
+        width: 32%;
+        height: 16%;
+        border-radius: 8px;
+      }
+
+      .robot .eye {
+        top: 8%;
+        left: 41%;
+        width: 18%;
+        height: 3%;
+        border: 0;
+        border-radius: 0;
+        background: var(--cyan);
+        box-shadow: 0 0 18px var(--cyan);
+      }
+
+      .robot .torso {
+        top: 20%;
+        left: 26%;
+        width: 48%;
+        height: 35%;
+        border-radius: 8px;
+        clip-path: polygon(14% 0, 86% 0, 100% 100%, 0 100%);
+      }
+
+      .robot .core {
+        top: 32%;
+        left: 44%;
+        width: 12%;
+        height: 9%;
+        border: 0;
+        border-radius: 50%;
+        background: var(--amber);
+        box-shadow: 0 0 22px var(--amber);
+      }
+
+      .robot .arm-left,
+      .robot .arm-right {
+        top: 24%;
+        width: 18%;
+        height: 38%;
+        border-radius: 8px;
+      }
+
+      .robot .arm-left {
+        left: 5%;
+        transform: rotate(10deg);
+      }
+
+      .robot .arm-right {
+        right: 5%;
+        transform: rotate(-10deg);
+      }
+
+      .robot .leg-left,
+      .robot .leg-right {
+        top: 57%;
+        width: 18%;
+        height: 37%;
+        border-radius: 8px;
+      }
+
+      .robot .leg-left {
+        left: 30%;
+      }
+
+      .robot .leg-right {
+        right: 30%;
+      }
+
+      .robot.tier-2 div {
+        border-color: rgba(83, 228, 255, 0.24);
+      }
+
+      .robot.tier-3 div {
+        border-color: rgba(247, 184, 75, 0.34);
+        box-shadow: inset 0 0 20px rgba(247, 184, 75, 0.12);
+      }
+
+      .robot.mode-heavy {
+        transform: scaleX(1.16);
+      }
+
+      .robot.mode-agile {
+        transform: scaleX(0.84) skewX(-2deg);
+      }
+
+      .robot.has-weapon::after {
+        content: "";
+        position: absolute;
+        top: 25%;
+        right: -2%;
+        width: 24%;
+        height: 9%;
+        border: 2px solid rgba(245, 248, 255, 0.14);
+        border-radius: 8px;
+        background: linear-gradient(90deg, #1d2633, var(--red));
+        box-shadow: 0 0 20px rgba(255, 89, 109, 0.3);
+      }
+
+      .stats-grid,
+      .mode-grid,
+      .arena-grid {
+        display: grid;
+        gap: 10px;
+      }
+
+      .stats-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+
+      .stat {
+        padding: 11px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.04);
+      }
+
+      .stat span {
+        display: block;
+        color: var(--muted);
+        font-size: 11px;
+        font-weight: 800;
+      }
+
+      .stat strong {
+        display: block;
+        margin-top: 4px;
+        font-size: 18px;
+      }
+
+      .side-panel {
+        display: grid;
+        grid-template-rows: auto auto 1fr;
+        gap: 14px;
+        min-height: 0;
+        padding: 18px;
+        overflow: auto;
+      }
+
+      .panel-block {
+        padding: 14px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.04);
+      }
+
+      .panel-block h3 {
+        margin-bottom: 10px;
+        font-size: 15px;
+      }
+
+      .mode-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      .mode-button.active {
+        border-color: var(--cyan);
+        color: var(--cyan);
+      }
+
+      .arena-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .arena-button {
+        min-height: 96px;
+        padding: 12px;
+        text-align: left;
+      }
+
+      .arena-button strong,
+      .arena-button span {
+        display: block;
+      }
+
+      .arena-button span {
+        margin-top: 7px;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 600;
+        line-height: 1.4;
+      }
+
+      .log {
+        min-height: 72px;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.5;
+      }
+
+      .upgrade-button {
+        width: 100%;
+        margin-top: 10px;
+        background: var(--cyan);
+        color: #041018;
+      }
+
+      .footer-actions {
+        display: flex;
+        gap: 10px;
+        padding: 12px 16px;
+        border-top: 1px solid var(--line);
+        background: rgba(3, 7, 12, 0.64);
+      }
+
+      .footer-actions button {
+        flex: 1;
+      }
+
+      .combat-shell {
+        position: relative;
+        grid-template-rows: auto 1fr;
+        background:
+          linear-gradient(180deg, rgba(255, 89, 109, 0.09), transparent 24%),
+          var(--panel-strong);
+      }
+
+      .combat-view {
+        position: relative;
+        min-height: 0;
+        overflow: hidden;
+        background:
+          linear-gradient(180deg, rgba(83, 228, 255, 0.09), transparent 36%),
+          repeating-linear-gradient(0deg, transparent 0 35px, rgba(255, 255, 255, 0.035) 35px 36px);
+      }
+
+      .arena-depth {
+        position: absolute;
+        inset: 42% -20% -14%;
+        border-top: 2px solid rgba(83, 228, 255, 0.2);
+        background:
+          linear-gradient(90deg, transparent, rgba(83, 228, 255, 0.1), transparent),
+          repeating-linear-gradient(90deg, rgba(83, 228, 255, 0.16) 0 1px, transparent 1px 80px);
+        transform: perspective(540px) rotateX(64deg);
+        transform-origin: top;
+      }
+
+      .enemy {
+        position: absolute;
+        left: 50%;
+        top: 17%;
+        width: min(250px, 52vw);
+        height: min(335px, 48vh);
+        transform: translateX(-50%);
+      }
+
+      .enemy .robot {
+        width: 100%;
+        height: 100%;
+      }
+
+      .enemy.is-attacking {
+        animation: attackWindup 0.9s ease-in-out infinite;
+      }
+
+      .enemy.is-hit {
+        animation: hitFlash 0.3s ease;
+      }
+
+      .weak-point {
+        position: absolute;
+        width: 46px;
+        height: 46px;
+        border: 2px solid var(--amber);
+        border-radius: 50%;
+        background: rgba(247, 184, 75, 0.14);
+        box-shadow: 0 0 24px rgba(247, 184, 75, 0.55);
+        transform: translate(-50%, -50%);
+        cursor: crosshair;
+        animation: targetPulse 0.65s ease-in-out infinite;
+      }
+
+      .combat-message {
+        position: absolute;
+        left: 50%;
+        top: 18px;
+        z-index: 4;
+        width: min(520px, calc(100% - 32px));
+        padding: 10px 12px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: rgba(3, 7, 12, 0.74);
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.4;
+        text-align: center;
+        transform: translateX(-50%);
+      }
+
+      .bars {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--line);
+        background: rgba(3, 7, 12, 0.72);
+      }
+
+      .bar-wrap span {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 6px;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 800;
+      }
+
+      .bar {
+        height: 12px;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.05);
+      }
+
+      .bar i {
+        display: block;
+        width: 100%;
+        height: 100%;
+        background: var(--green);
+        transition: width 0.22s ease;
+      }
+
+      .bar.enemy-hp i {
+        background: var(--red);
+      }
+
+      .bar.charge i {
+        background: var(--cyan);
+      }
+
+      .controls {
+        position: absolute;
+        inset: auto 0 0;
+        z-index: 5;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        align-items: end;
+        gap: 18px;
+        padding: 18px;
+        pointer-events: none;
+      }
+
+      .joystick {
+        position: relative;
+        width: 112px;
+        height: 112px;
+        border: 1px solid var(--line);
+        border-radius: 50%;
+        background: rgba(3, 7, 12, 0.58);
+        pointer-events: auto;
+      }
+
+      .stick {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        background: rgba(83, 228, 255, 0.46);
+        transform: translate(-50%, -50%);
+      }
+
+      .skill-buttons {
+        display: grid;
+        grid-template-columns: repeat(3, 62px);
+        justify-content: end;
+        align-items: end;
+        gap: 10px;
+        pointer-events: auto;
+      }
+
+      .skill-buttons button {
+        width: 62px;
+        height: 62px;
+        border-radius: 50%;
+        font-size: 12px;
+      }
+
+      .skill-buttons .primary {
+        background: var(--cyan);
+        color: #041018;
+      }
+
+      .skill-buttons .special {
+        background: var(--amber);
+        color: #1b1304;
+      }
+
+      .result-modal {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        z-index: 8;
+        display: none;
+        width: min(420px, calc(100% - 32px));
+        padding: 18px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: rgba(5, 7, 11, 0.94);
+        transform: translate(-50%, -50%);
+      }
+
+      .result-modal.active {
+        display: block;
+      }
+
+      .result-modal h2 {
+        margin-bottom: 8px;
+        font-size: 22px;
+      }
+
+      .result-modal p {
+        color: var(--muted);
+        line-height: 1.5;
+      }
+
+      .result-modal button {
+        width: 100%;
+        margin-top: 14px;
+      }
+
+      @keyframes blink {
         0%,
         100% {
-          opacity: 0.46;
+          opacity: 0.4;
         }
 
         50% {
           opacity: 1;
         }
       }
+
+      @keyframes attackWindup {
+        0%,
+        100% {
+          transform: translateX(-50%) scale(1);
+        }
+
+        50% {
+          transform: translateX(-50%) scale(1.045);
+        }
+      }
+
+      @keyframes hitFlash {
+        0%,
+        100% {
+          filter: none;
+        }
+
+        50% {
+          filter: brightness(1.8) saturate(1.6);
+        }
+      }
+
+      @keyframes targetPulse {
+        0%,
+        100% {
+          opacity: 0.55;
+          transform: translate(-50%, -50%) scale(0.92);
+        }
+
+        50% {
+          opacity: 1;
+          transform: translate(-50%, -50%) scale(1.05);
+        }
+      }
+
+      @media (max-width: 780px) {
+        body {
+          overflow: auto;
+        }
+
+        .login-screen,
+        .hub-screen,
+        .combat-screen {
+          padding: 0;
+        }
+
+        .shell {
+          width: 100%;
+          height: 100dvh;
+          border: 0;
+          border-radius: 0;
+        }
+
+        .hub-grid {
+          grid-template-columns: 1fr;
+          overflow: auto;
+        }
+
+        .garage {
+          border-right: 0;
+          border-bottom: 1px solid var(--line);
+        }
+
+        .robot-stage {
+          min-height: 230px;
+        }
+
+        .stats-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+
+        .mode-grid,
+        .arena-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .topbar {
+          align-items: start;
+          flex-direction: column;
+        }
+
+        .resource-row {
+          justify-content: start;
+        }
+
+        .bars {
+          grid-template-columns: 1fr;
+          gap: 8px;
+        }
+
+        .controls {
+          gap: 10px;
+          padding: 12px;
+        }
+
+        .joystick {
+          width: 96px;
+          height: 96px;
+        }
+
+        .skill-buttons {
+          grid-template-columns: repeat(3, 54px);
+        }
+
+        .skill-buttons button {
+          width: 54px;
+          height: 54px;
+          font-size: 11px;
+        }
+      }
     </style>
   </head>
   <body>
     <main id="app">
-      <section class="screen title-screen" aria-label="타이틀 화면">
-        <div>
-          <h1>NOCKOUT Protocol</h1>
-          <p>쓰레기장에서 태어난 고철 로봇이 챔피언을 향해 올라갑니다.</p>
+      <section class="screen title-screen active" data-screen="title" aria-label="타이틀 화면">
+        <div class="title-box">
+          <div class="eyebrow">JUNKYARD ARENA RPG</div>
+          <h1 class="title">NOCKOUT<br>Protocol</h1>
+          <p class="subtitle">완성품은 성장하지 못한다. 고철은 불완전해서 진화한다.</p>
           <div class="touch-text">TOUCH THE SCREEN</div>
         </div>
       </section>
 
-      <section class="screen game-ui" aria-label="메인 UI">
-        <h1>NOCKOUT Protocol Demo Reset</h1>
-        <p>이전 WebGL 데모 빌드는 제거되었습니다. 지금은 새 타이틀 화면과 UI 방향으로 다시 진행합니다.</p>
-        <div class="actions">
-          <button class="google-login" type="button" aria-disabled="true">
+      <section class="screen login-screen" data-screen="login" aria-label="로그인 화면">
+        <div class="shell login-shell">
+          <div class="eyebrow">BACK ALLEY ACCESS</div>
+          <h1>고철 리그 접속</h1>
+          <p class="subtitle">Google 로그인은 아직 구현하지 않았습니다. 지금은 게스트 파일럿으로 시작합니다.</p>
+          <button class="google-login" type="button" id="googleLogin">
             <span class="google-mark">G</span>
             Google로 로그인
           </button>
-          <a href="https://onlyai61.github.io/nockout-protocol/">새 와이어프레임 보기</a>
+          <button type="button" id="guestStart" style="margin-top:10px;">게스트로 시작</button>
         </div>
-        <p class="notice">로그인 기능은 아직 구현하지 않았습니다.</p>
+      </section>
+
+      <section class="screen hub-screen" data-screen="hub" aria-label="차고 화면">
+        <div class="shell hub-shell">
+          <header class="topbar">
+            <div class="brand">
+              <strong>NOCKOUT Protocol</strong>
+              <span id="storyBeat">쓰레기장 17구역에서 조립된 첫 기체</span>
+            </div>
+            <div class="resource-row">
+              <span class="chip">스크랩 <b id="scrapCount">0</b></span>
+              <span class="chip">코어 <b id="coreCount">0</b></span>
+              <span class="chip">리그 <b id="leagueRank">예선</b></span>
+            </div>
+          </header>
+
+          <div class="hub-grid">
+            <section class="garage">
+              <div class="section-title">
+                <div>
+                  <h2>고철 로봇: PATCH-01</h2>
+                  <p id="modeDescription">균형형 프레임. 불완전하지만 모든 강화가 가능하다.</p>
+                </div>
+                <span class="chip" id="tierLabel">강화 1단계</span>
+              </div>
+
+              <div class="robot-stage">
+                <div class="city-lines"></div>
+                <div class="robot" id="hubRobot" aria-label="주인공 로봇">
+                  <div class="head"></div>
+                  <div class="eye"></div>
+                  <div class="torso"></div>
+                  <div class="core"></div>
+                  <div class="arm-left"></div>
+                  <div class="arm-right"></div>
+                  <div class="leg-left"></div>
+                  <div class="leg-right"></div>
+                </div>
+              </div>
+
+              <div class="stats-grid">
+                <div class="stat"><span>내구</span><strong id="statHp">100</strong></div>
+                <div class="stat"><span>타격</span><strong id="statAtk">14</strong></div>
+                <div class="stat"><span>회피</span><strong id="statDodge">12</strong></div>
+                <div class="stat"><span>강화</span><strong id="statCharge">0%</strong></div>
+              </div>
+            </section>
+
+            <aside class="side-panel">
+              <section class="panel-block">
+                <h3>모드 변경</h3>
+                <div class="mode-grid">
+                  <button class="mode-button active" type="button" data-mode="balanced">기본</button>
+                  <button class="mode-button" type="button" data-mode="heavy">중량</button>
+                  <button class="mode-button" type="button" data-mode="agile">기동</button>
+                </div>
+              </section>
+
+              <section class="panel-block">
+                <h3>강화</h3>
+                <p class="log" id="upgradeText">전투에서 떨어진 파츠를 모아 프레임을 강화하세요.</p>
+                <button class="upgrade-button" type="button" id="upgradeButton">스크랩 40으로 강화</button>
+              </section>
+
+              <section class="panel-block">
+                <h3>투기장</h3>
+                <div class="arena-grid">
+                  <button class="arena-button" type="button" data-arena="main">
+                    <strong>메인 투기장</strong>
+                    <span>스토리를 진행하고 기업제 로봇과 결투합니다.</span>
+                  </button>
+                  <button class="arena-button" type="button" data-arena="alley">
+                    <strong>뒷골목 투기장</strong>
+                    <span>연습과 파츠 파밍. 난이도는 낮고 보상도 작습니다.</span>
+                  </button>
+                </div>
+              </section>
+            </aside>
+          </div>
+
+          <div class="footer-actions">
+            <button type="button" id="pvpButton">PVP 준비중</button>
+            <button type="button" id="resetButton">프로토타입 초기화</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen combat-screen" data-screen="combat" aria-label="전투 화면">
+        <div class="shell combat-shell">
+          <header class="bars">
+            <div class="bar-wrap">
+              <span><b>PATCH-01</b><b id="playerHpText">100 / 100</b></span>
+              <div class="bar"><i id="playerHpBar"></i></div>
+            </div>
+            <div class="bar-wrap">
+              <span><b id="enemyName">상대 로봇</b><b id="enemyHpText">100 / 100</b></span>
+              <div class="bar enemy-hp"><i id="enemyHpBar"></i></div>
+            </div>
+            <div class="bar-wrap">
+              <span><b>강화 게이지</b><b id="chargeText">0%</b></span>
+              <div class="bar charge"><i id="chargeBar"></i></div>
+            </div>
+            <div class="resource-row">
+              <span class="chip" id="combatMode">기본 모드</span>
+              <span class="chip" id="combatHint">약점이 뜨면 터치해서 패링</span>
+            </div>
+          </header>
+
+          <div class="combat-view" id="combatView">
+            <div class="combat-message" id="combatMessage">상대 패턴을 보고 공격 타이밍을 잡으세요.</div>
+            <div class="arena-depth"></div>
+            <div class="enemy" id="enemy">
+              <div class="robot tier-2" id="enemyRobot">
+                <div class="head"></div>
+                <div class="eye"></div>
+                <div class="torso"></div>
+                <div class="core"></div>
+                <div class="arm-left"></div>
+                <div class="arm-right"></div>
+                <div class="leg-left"></div>
+                <div class="leg-right"></div>
+              </div>
+            </div>
+
+            <div class="controls">
+              <div class="joystick" id="joystick" aria-label="이동 조이스틱"><div class="stick" id="stick"></div></div>
+              <div class="skill-buttons">
+                <button type="button" class="primary" id="attackButton">타격</button>
+                <button type="button" class="special" id="skillButton">강화</button>
+                <button type="button" id="dodgeButton">회피</button>
+              </div>
+            </div>
+
+            <div class="result-modal" id="resultModal">
+              <h2 id="resultTitle">승리</h2>
+              <p id="resultText">파츠를 획득했습니다.</p>
+              <button type="button" id="returnHub">차고로 돌아가기</button>
+            </div>
+          </div>
+        </div>
       </section>
     </main>
 
     <script>
-      const app = document.querySelector("#app");
-      const titleScreen = document.querySelector(".title-screen");
-      const googleLogin = document.querySelector(".google-login");
+      const screens = document.querySelectorAll(".screen");
+      const state = {
+        screen: "title",
+        scrap: 20,
+        cores: 0,
+        tier: 1,
+        mode: "balanced",
+        charge: 0,
+        story: 0,
+        hacked: false,
+        weapon: false,
+        arena: "main",
+        playerHp: 100,
+        enemyHp: 100,
+        enemyMaxHp: 100,
+        currentEnemy: null,
+        attackTimer: null,
+        weakTimer: null,
+        weakPoint: null,
+        enemyAttacking: false,
+        battleOver: false
+      };
 
-      titleScreen.addEventListener("click", () => {
-        app.classList.add("is-started");
-      });
+      const modes = {
+        balanced: { label: "기본 모드", hp: 0, atk: 0, dodge: 0, desc: "균형형 프레임. 불완전하지만 모든 강화가 가능하다." },
+        heavy: { label: "중량 모드", hp: 32, atk: 7, dodge: -5, desc: "느리지만 강한 프레임. 보스의 강공격을 버티고 되친다." },
+        agile: { label: "기동 모드", hp: -10, atk: -1, dodge: 10, desc: "빠르고 가벼운 프레임. 약점 터치와 회피 보상이 크다." }
+      };
 
-      titleScreen.addEventListener("keydown", (event) => {
-        if (event.key === "Enter" || event.key === " ") {
-          app.classList.add("is-started");
+      const enemies = [
+        { name: "폐기장 경비 로봇", hp: 72, atk: 10, reward: 24, core: 0, text: "첫 결투. 고철 프레임이 움직인다는 걸 증명하세요." },
+        { name: "기업제 완성형 MK-2", hp: 118, atk: 14, reward: 36, core: 1, text: "완성형 로봇은 강화되지 않지만 기본 성능이 높습니다." },
+        { name: "자동 결투 프로토콜", hp: 148, atk: 18, reward: 48, core: 1, text: "광고판이 깜빡입니다. AUTO-DUEL PROTOCOL UPDATE." },
+        { name: "해킹된 결승 상대", hp: 205, atk: 24, reward: 70, core: 1, text: "시스템이 결승 상대를 광폭화했습니다. 화기 패턴을 조심하세요.", hacked: true }
+      ];
+
+      const alleyEnemies = [
+        { name: "뒷골목 스파링 봇", hp: 64, atk: 8, reward: 18, core: 0, text: "재료 파밍용 비공식 결투입니다." },
+        { name: "청소 로봇 잔해", hp: 80, atk: 9, reward: 22, core: 0, text: "누군가에게 강제 결투를 신청당한 흔적이 있습니다." }
+      ];
+
+      const els = {
+        app: document.querySelector("#app"),
+        title: document.querySelector(".title-screen"),
+        googleLogin: document.querySelector("#googleLogin"),
+        guestStart: document.querySelector("#guestStart"),
+        hubRobot: document.querySelector("#hubRobot"),
+        scrap: document.querySelector("#scrapCount"),
+        cores: document.querySelector("#coreCount"),
+        rank: document.querySelector("#leagueRank"),
+        storyBeat: document.querySelector("#storyBeat"),
+        modeDescription: document.querySelector("#modeDescription"),
+        tierLabel: document.querySelector("#tierLabel"),
+        statHp: document.querySelector("#statHp"),
+        statAtk: document.querySelector("#statAtk"),
+        statDodge: document.querySelector("#statDodge"),
+        statCharge: document.querySelector("#statCharge"),
+        upgradeText: document.querySelector("#upgradeText"),
+        upgradeButton: document.querySelector("#upgradeButton"),
+        modeButtons: document.querySelectorAll(".mode-button"),
+        arenaButtons: document.querySelectorAll(".arena-button"),
+        pvpButton: document.querySelector("#pvpButton"),
+        resetButton: document.querySelector("#resetButton"),
+        playerHpText: document.querySelector("#playerHpText"),
+        enemyHpText: document.querySelector("#enemyHpText"),
+        playerHpBar: document.querySelector("#playerHpBar"),
+        enemyHpBar: document.querySelector("#enemyHpBar"),
+        chargeText: document.querySelector("#chargeText"),
+        chargeBar: document.querySelector("#chargeBar"),
+        enemyName: document.querySelector("#enemyName"),
+        enemy: document.querySelector("#enemy"),
+        enemyRobot: document.querySelector("#enemyRobot"),
+        combatMessage: document.querySelector("#combatMessage"),
+        combatMode: document.querySelector("#combatMode"),
+        combatHint: document.querySelector("#combatHint"),
+        combatView: document.querySelector("#combatView"),
+        attackButton: document.querySelector("#attackButton"),
+        skillButton: document.querySelector("#skillButton"),
+        dodgeButton: document.querySelector("#dodgeButton"),
+        resultModal: document.querySelector("#resultModal"),
+        resultTitle: document.querySelector("#resultTitle"),
+        resultText: document.querySelector("#resultText"),
+        returnHub: document.querySelector("#returnHub"),
+        joystick: document.querySelector("#joystick"),
+        stick: document.querySelector("#stick")
+      };
+
+      function showScreen(name) {
+        state.screen = name;
+        screens.forEach((screen) => screen.classList.toggle("active", screen.dataset.screen === name));
+      }
+
+      function stats() {
+        const mode = modes[state.mode];
+        const tierBonus = (state.tier - 1) * 22;
+        return {
+          hp: 100 + tierBonus + mode.hp,
+          atk: 14 + (state.tier - 1) * 6 + mode.atk + (state.weapon ? 9 : 0),
+          dodge: 12 + (state.tier - 1) * 2 + mode.dodge
+        };
+      }
+
+      function setMessage(text) {
+        els.combatMessage.textContent = text;
+      }
+
+      function renderHub() {
+        const s = stats();
+        els.scrap.textContent = state.scrap;
+        els.cores.textContent = state.cores;
+        els.rank.textContent = state.story >= 4 ? "챔피언" : ["예선", "하위 리그", "중위 리그", "준결승", "결승"][state.story] || "예선";
+        els.storyBeat.textContent = storyText();
+        els.modeDescription.textContent = modes[state.mode].desc;
+        els.tierLabel.textContent = `강화 ${state.tier}단계`;
+        els.statHp.textContent = s.hp;
+        els.statAtk.textContent = s.atk;
+        els.statDodge.textContent = s.dodge;
+        els.statCharge.textContent = `${state.charge}%`;
+        els.hubRobot.className = `robot tier-${state.tier} mode-${state.mode}${state.weapon ? " has-weapon" : ""}`;
+        els.upgradeButton.textContent = state.tier < 3 ? `스크랩 ${upgradeCost()}으로 강화` : "최종 프레임 완성";
+        els.upgradeButton.disabled = state.tier >= 3 || state.scrap < upgradeCost();
+        els.upgradeText.textContent = upgradeCopy();
+        els.modeButtons.forEach((button) => button.classList.toggle("active", button.dataset.mode === state.mode));
+      }
+
+      function storyText() {
+        if (state.story === 0) return "쓰레기장 17구역에서 조립된 첫 기체";
+        if (state.story === 1) return "뒷골목에서 정식 리그 출전권을 따냈다";
+        if (state.story === 2) return "기업제 로봇들이 이상한 명령 지연을 보인다";
+        if (state.story === 3) return "자동 결투 시스템이 도시 전체에 번지고 있다";
+        return "해킹 프로토콜을 뚫고 챔피언 결투에 도달했다";
+      }
+
+      function upgradeCost() {
+        return state.tier === 1 ? 40 : 85;
+      }
+
+      function upgradeCopy() {
+        if (state.tier >= 3 && state.weapon) return "최종 프레임에 화기 슬롯이 열렸습니다. 결승전의 화력전에 대응할 수 있습니다.";
+        if (state.tier >= 3) return "프레임은 최종 단계입니다. 해킹 사건 이후 화기 파츠가 필요합니다.";
+        return "고철 프레임이라 구조가 열려 있습니다. 기성품과 달리 계속 강화할 수 있습니다.";
+      }
+
+      function startBattle(arena) {
+        state.arena = arena;
+        const pool = arena === "alley" ? alleyEnemies : enemies;
+        const enemy = arena === "alley" ? pool[Math.floor(Math.random() * pool.length)] : pool[Math.min(state.story, pool.length - 1)];
+        state.currentEnemy = { ...enemy };
+        state.enemyMaxHp = enemy.hp + Math.max(0, state.story - 1) * 12;
+        state.enemyHp = state.enemyMaxHp;
+        state.playerHp = stats().hp;
+        state.battleOver = false;
+        state.enemyAttacking = false;
+        state.hacked = Boolean(enemy.hacked);
+        els.enemyRobot.className = `robot tier-${enemy.hacked ? 3 : 2}${enemy.hacked ? " has-weapon" : ""}`;
+        els.enemyName.textContent = enemy.name;
+        els.combatMode.textContent = modes[state.mode].label;
+        els.combatHint.textContent = enemy.hacked ? "화기 강공격은 약점 패링 필수" : "약점이 뜨면 터치해서 패링";
+        els.resultModal.classList.remove("active");
+        showScreen("combat");
+        setMessage(enemy.text);
+        updateCombat();
+        scheduleEnemyAttack(1400);
+      }
+
+      function updateCombat() {
+        const maxHp = stats().hp;
+        els.playerHpText.textContent = `${Math.max(0, Math.round(state.playerHp))} / ${maxHp}`;
+        els.enemyHpText.textContent = `${Math.max(0, Math.round(state.enemyHp))} / ${state.enemyMaxHp}`;
+        els.playerHpBar.style.width = `${Math.max(0, (state.playerHp / maxHp) * 100)}%`;
+        els.enemyHpBar.style.width = `${Math.max(0, (state.enemyHp / state.enemyMaxHp) * 100)}%`;
+        els.chargeText.textContent = `${state.charge}%`;
+        els.chargeBar.style.width = `${state.charge}%`;
+      }
+
+      function playerAttack(multiplier = 1) {
+        if (state.battleOver) return;
+        const damage = Math.round(stats().atk * multiplier);
+        state.enemyHp -= damage;
+        state.charge = Math.min(100, state.charge + 13);
+        flashEnemy();
+        setMessage(`타격 성공. ${damage} 피해를 입혔습니다.`);
+        checkBattle();
+      }
+
+      function useSkill() {
+        if (state.battleOver) return;
+        if (state.charge < 100) {
+          setMessage("강화 게이지가 부족합니다. 공격하거나 패링해서 게이지를 채우세요.");
+          return;
         }
-      });
+        const damage = Math.round(stats().atk * (state.weapon ? 3.4 : 2.5));
+        state.enemyHp -= damage;
+        state.charge = 0;
+        flashEnemy();
+        setMessage(state.weapon ? `화기 강화 발동. ${damage} 피해.` : `강화 타격 발동. ${damage} 피해.`);
+        checkBattle();
+      }
 
-      titleScreen.tabIndex = 0;
+      function dodge() {
+        if (state.battleOver) return;
+        const chance = Math.min(72, stats().dodge + 34);
+        if (Math.random() * 100 < chance) {
+          state.charge = Math.min(100, state.charge + 18);
+          setMessage("회피 성공. 강화 게이지가 상승했습니다.");
+          clearWeakPoint();
+          state.enemy.classList.remove("is-attacking");
+          state.enemyAttacking = false;
+          scheduleEnemyAttack(1200);
+        } else {
+          setMessage("회피 실패. 자세가 무너졌습니다.");
+          enemyDamage(8);
+        }
+        updateCombat();
+      }
 
-      googleLogin.addEventListener("click", () => {
+      function scheduleEnemyAttack(delay) {
+        clearTimeout(state.attackTimer);
+        clearTimeout(state.weakTimer);
+        if (state.battleOver) return;
+        state.attackTimer = setTimeout(() => {
+          state.enemyAttacking = true;
+          els.enemy.classList.add("is-attacking");
+          spawnWeakPoint();
+          state.weakTimer = setTimeout(() => {
+            if (state.enemyAttacking && !state.battleOver) {
+              clearWeakPoint();
+              enemyDamage(state.currentEnemy.atk + (state.hacked ? 10 : 0));
+              els.enemy.classList.remove("is-attacking");
+              state.enemyAttacking = false;
+              scheduleEnemyAttack(state.hacked ? 1500 : 1900);
+            }
+          }, state.hacked ? 950 : 1250);
+        }, delay);
+      }
+
+      function spawnWeakPoint() {
+        clearWeakPoint();
+        const point = document.createElement("button");
+        point.type = "button";
+        point.className = "weak-point";
+        const positions = [
+          [50, 34],
+          [38, 48],
+          [63, 49],
+          [50, 63]
+        ];
+        const [left, top] = positions[Math.floor(Math.random() * positions.length)];
+        point.style.left = `${left}%`;
+        point.style.top = `${top}%`;
+        point.setAttribute("aria-label", "약점 패링");
+        point.addEventListener("click", parry);
+        els.combatView.append(point);
+        state.weakPoint = point;
+        setMessage(state.hacked ? "미사일 락온. 약점을 터치해 패링하세요." : "강공격 예고. 약점을 터치해 패링하세요.");
+      }
+
+      function parry() {
+        if (!state.enemyAttacking || state.battleOver) return;
+        clearWeakPoint();
+        clearTimeout(state.weakTimer);
+        state.enemyAttacking = false;
+        els.enemy.classList.remove("is-attacking");
+        const damage = Math.round(stats().atk * (state.mode === "agile" ? 1.7 : 1.35));
+        state.enemyHp -= damage;
+        state.charge = Math.min(100, state.charge + 28);
+        flashEnemy();
+        setMessage(`패링 성공. 카운터로 ${damage} 피해.`);
+        checkBattle();
+        if (!state.battleOver) scheduleEnemyAttack(1500);
+      }
+
+      function enemyDamage(amount) {
+        state.playerHp -= amount;
+        setMessage(`피격. ${amount} 피해를 받았습니다.`);
+        checkBattle();
+      }
+
+      function flashEnemy() {
+        els.enemy.classList.remove("is-hit");
+        void els.enemy.offsetWidth;
+        els.enemy.classList.add("is-hit");
+      }
+
+      function clearWeakPoint() {
+        if (state.weakPoint) {
+          state.weakPoint.remove();
+          state.weakPoint = null;
+        }
+      }
+
+      function checkBattle() {
+        updateCombat();
+        if (state.enemyHp <= 0) endBattle(true);
+        if (state.playerHp <= 0) endBattle(false);
+      }
+
+      function endBattle(win) {
+        if (state.battleOver) return;
+        state.battleOver = true;
+        clearTimeout(state.attackTimer);
+        clearTimeout(state.weakTimer);
+        clearWeakPoint();
+        els.enemy.classList.remove("is-attacking");
+
+        if (win) {
+          const reward = state.currentEnemy.reward;
+          state.scrap += reward;
+          state.cores += state.currentEnemy.core;
+          if (state.arena === "main") state.story = Math.min(4, state.story + 1);
+          if (state.story >= 4) state.weapon = true;
+          els.resultTitle.textContent = state.currentEnemy.hacked ? "프로토콜 차단" : "승리";
+          els.resultText.textContent = `${reward} 스크랩${state.currentEnemy.core ? `, 코어 ${state.currentEnemy.core}개` : ""}를 획득했습니다.${state.weapon ? " 화기 슬롯이 개방되었습니다." : ""}`;
+        } else {
+          els.resultTitle.textContent = "패배";
+          els.resultText.textContent = "프레임이 파손되었습니다. 차고에서 강화하거나 뒷골목 투기장에서 재료를 모으세요.";
+        }
+
+        els.resultModal.classList.add("active");
+      }
+
+      function upgrade() {
+        const cost = upgradeCost();
+        if (state.tier >= 3 || state.scrap < cost) return;
+        state.scrap -= cost;
+        state.tier += 1;
+        state.charge = 0;
+        renderHub();
+      }
+
+      function resetPrototype() {
+        state.scrap = 20;
+        state.cores = 0;
+        state.tier = 1;
+        state.mode = "balanced";
+        state.charge = 0;
+        state.story = 0;
+        state.hacked = false;
+        state.weapon = false;
+        renderHub();
+      }
+
+      function setupJoystick() {
+        let active = false;
+
+        const move = (event) => {
+          if (!active) return;
+          const pointer = event.touches ? event.touches[0] : event;
+          const rect = els.joystick.getBoundingClientRect();
+          const x = pointer.clientX - rect.left - rect.width / 2;
+          const y = pointer.clientY - rect.top - rect.height / 2;
+          const max = rect.width * 0.24;
+          const clampedX = Math.max(-max, Math.min(max, x));
+          const clampedY = Math.max(-max, Math.min(max, y));
+          els.stick.style.transform = `translate(calc(-50% + ${clampedX}px), calc(-50% + ${clampedY}px))`;
+        };
+
+        const stop = () => {
+          active = false;
+          els.stick.style.transform = "translate(-50%, -50%)";
+        };
+
+        els.joystick.addEventListener("pointerdown", (event) => {
+          active = true;
+          els.joystick.setPointerCapture(event.pointerId);
+          move(event);
+        });
+        els.joystick.addEventListener("pointermove", move);
+        els.joystick.addEventListener("pointerup", stop);
+        els.joystick.addEventListener("pointercancel", stop);
+      }
+
+      els.title.addEventListener("click", () => showScreen("login"));
+      els.googleLogin.addEventListener("click", () => {
         window.alert("Google 로그인은 아직 구현하지 않았습니다.");
       });
+      els.guestStart.addEventListener("click", () => {
+        renderHub();
+        showScreen("hub");
+      });
+      els.modeButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          state.mode = button.dataset.mode;
+          renderHub();
+        });
+      });
+      els.arenaButtons.forEach((button) => {
+        button.addEventListener("click", () => startBattle(button.dataset.arena));
+      });
+      els.upgradeButton.addEventListener("click", upgrade);
+      els.attackButton.addEventListener("click", () => playerAttack(1));
+      els.skillButton.addEventListener("click", useSkill);
+      els.dodgeButton.addEventListener("click", dodge);
+      els.returnHub.addEventListener("click", () => {
+        renderHub();
+        showScreen("hub");
+      });
+      els.pvpButton.addEventListener("click", () => window.alert("PVP는 온라인 기능 단계에서 구현합니다."));
+      els.resetButton.addEventListener("click", resetPrototype);
+
+      setupJoystick();
+      renderHub();
     </script>
   </body>
 </html>
