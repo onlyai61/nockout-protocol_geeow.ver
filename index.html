@@ -1074,6 +1074,33 @@
         screens.forEach((screen) => screen.classList.toggle("active", screen.dataset.screen === name));
       }
 
+      function resetGuestSession() {
+        clearTimeout(state.attackTimer);
+        clearTimeout(state.weakTimer);
+        clearWeakPoint();
+        state.scrap = 20;
+        state.cores = 0;
+        state.tier = 1;
+        state.mode = "balanced";
+        state.charge = 0;
+        state.story = 0;
+        state.hacked = false;
+        state.weapon = false;
+        state.arena = "main";
+        state.playerHp = 100;
+        state.enemyHp = 100;
+        state.enemyMaxHp = 100;
+        state.currentEnemy = null;
+        state.attackTimer = null;
+        state.weakTimer = null;
+        state.weakPoint = null;
+        state.enemyAttacking = false;
+        state.battleOver = false;
+        els.enemy?.classList.remove("is-attacking", "is-hit");
+        els.resultModal?.classList.remove("active");
+        renderHub();
+      }
+
       function stats() {
         const mode = modes[state.mode];
         const tierBonus = (state.tier - 1) * 22;
@@ -1354,7 +1381,7 @@
         window.alert("Google 로그인은 아직 구현하지 않았습니다.");
       });
       els.guestStart.addEventListener("click", () => {
-        renderHub();
+        resetGuestSession();
         showScreen("hub");
       });
       els.modeButtons.forEach((button) => {
@@ -1378,7 +1405,20 @@
       els.resetButton?.addEventListener("click", resetPrototype);
 
       setupJoystick();
-      renderHub();
+      resetGuestSession();
+      showScreen("title");
+
+      window.addEventListener("pagehide", () => {
+        resetGuestSession();
+        showScreen("title");
+      });
+
+      window.addEventListener("pageshow", (event) => {
+        if (event.persisted) {
+          resetGuestSession();
+          showScreen("title");
+        }
+      });
     </script>
   </body>
 </html>
